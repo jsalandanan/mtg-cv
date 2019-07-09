@@ -54,10 +54,10 @@ for imagePath in paths.list_images(args["images"]):
   # find contours in the thresholded image and sort them by their
   # size
   cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
-    cv2.CHAIN_APPROX_SIMPLE)[-2]
+    cv2.CHAIN_APPROX_SIMPLE)
   cnts = imutils.grab_contours(cnts)
   cnts = sorted(cnts, key=cv2.contourArea, reverse=True)
- 
+
   # loop over the contours
   for c in cnts:
     # compute the bounding box of the contour and use the contour to
@@ -69,7 +69,7 @@ for imagePath in paths.list_images(args["images"]):
  
     # check to see if the aspect ratio and coverage width are within
     # acceptable criteria
-    if ar > 5 and crWidth > 0.75:
+    if (ar > 5 and crWidth > 0.75) or True:
       # pad the bounding box since we applied erosions and now need
       # to re-grow it
       pX = int((x + w) * 0.03)
@@ -80,6 +80,7 @@ for imagePath in paths.list_images(args["images"]):
       # extract the ROI from the image and draw a bounding box
       # surrounding the MRZ
       roi = image[y:y + h, x:x + w].copy()
+      print(roi)
       cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
       break
  
