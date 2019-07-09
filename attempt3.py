@@ -1,5 +1,4 @@
-from PIL import Image
-from PIL import ImageFilter
+from PIL import Image, ImageDraw
 
 # thought is to search for pixels of a certain threshold from color and switch
 # them to the surrounding pixels that are not threshold.
@@ -23,20 +22,33 @@ def black_like(color, threshold = 100):
       return False
   return True
 
-print(image.size)
-width, height = image.size # 672, 936
-for x in range(33, 336):
-  for y in range(880, 900):
-    if black_like(image.getpixel((x, y))):
-      image.putpixel((x,y), (0, 255, 0))
+
+def find_bounds(image):
+  width, height = image.size # 672, 936
+
+  minX = width + 1
+  maxX = -1
+  minY = height + 1
+  maxY = -1
+
+  for x in range(33, 336):
+    for y in range(880, 900):
+      if black_like(image.getpixel((x, y))):
+        if x < minX:
+          minX = x
+        if x > maxX:
+          maxX = x
+        if y < minY:
+          minY = y
+        if y > maxY:
+          maxY = y
+        image.putpixel((x,y), (0, 255, 0))
+
+  return [(minX, minY), (maxX, maxY)]
+
+draw = ImageDraw.Draw(image)
+draw.rectangle(find_bounds(image))
 
 image.show()
-
-# we actually just need to find the bounds of these pixels
-
-
-
-# blur with "color?"
-
 print('Done.')
 
