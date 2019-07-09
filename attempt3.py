@@ -7,7 +7,7 @@ from PIL import Image
 # pass 1 to find the bounds of each thing that's not color
 # then iterate on the perimeter, shrinking down
 
-image = Image.open('test2.jpg') # ash zealot
+image = Image.open('test.jpg') # ash zealot
 r, g, b = image.getpixel((300, 0))
 print('{},{},{}'.format(r,g,b)) # black is used (255, 255, 255)ef
 
