@@ -2,13 +2,6 @@ from PIL import Image, ImageDraw, ImageColor
 import cv2
 import np
 
-# thought is to search for pixels of a certain threshold from color and switch
-# them to the surrounding pixels that are not threshold.
-
-# two pass?
-# pass 1 to find the bounds of each thing that's not color
-# then iterate on the perimeter, shrinking down
-
 image = Image.open('card-images/Ash Zealot.jpg') # ash zealot
 r, g, b = image.getpixel((30, 878))
 print('{},{},{}'.format(r,g,b)) # black is used (255, 255, 255)ef
@@ -87,23 +80,55 @@ maxX, maxY = bounds[1]
 draw = ImageDraw.Draw(image)
 draw.rectangle(find_bounds(image), fill = (avgR, avgG, avgB))
 
-image = cv2.imread('card-images/Ash Zealot.jpg')
-height, width, _ = image.shape
+test_text_detection = True
+test_inpainting = False
 
-rectangle_image = np.zeros((height, width), np.uint8)
-cv2.rectangle(rectangle_image, (minX, minY), (maxX, maxY), 255, thickness=-1)
+THRESHOLD = 75 # is there a better way to get this other than trial and error?
 
-# masked_data = cv2.bitwise_and(image, image, mask=rectangle_image)
+if test_text_detection:
+  image = cv2.imread('card-images/Ash Zealot.jpg')
 
-cv2.imshow("mask", rectangle_image) # mask needs to be in grayscale?
-cv2.waitKey(0)
+  grayscale = cv2.cvtColor(src = image, code = cv2.COLOR_BGR2GRAY)
+  blur = cv2.GaussianBlur(grayscale, (3, 3), 0)
 
-cv2.imshow("image", image)
-cv2.waitKey(0)
+  retval, binary = cv2.threshold(src = blur, thresh = THRESHOLD, maxval = 255, type = cv2.THRESH_BINARY)
 
-dst = cv2.inpaint(image,rectangle_image,3,cv2.INPAINT_TELEA)
-cv2.imshow('dst', dst)
-cv2.waitKey(0)
+  cv2.imshow("test", binary)
+  cv2.waitKey(0)
 
-# image.show()
+  contours, _ = cv2.findContours(image = binary, mode = cv2.RETR_LIST, method = cv2.CHAIN_APPROX_SIMPLE)
+
+  # cv2.drawContours(image = image,
+  #   contours = contours,
+  #   contourIdx = -1,
+  #   color = (255, 0, 0),
+  #   thickness = 1)
+
+  for contour in contours:
+    (x,y,w,h) = cv2.boundingRect(contour)
+    cv2.rectangle(image, (x,y), (x+w, y+h), (255, 0, 0), 2)
+
+  cv2.imshow("test", image)
+  cv2.waitKey(0)
+
+elif test_inpainting:
+  image = cv2.imread('card-images/Ash Zealot.jpg')
+  height, width, _ = image.shape
+
+  rectangle_image = np.zeros((height, width), np.uint8)
+  cv2.rectangle(rectangle_image, (minX, minY), (maxX, maxY), 255, thickness=-1)
+
+  # masked_data = cv2.bitwise_and(image, image, mask=rectangle_image)
+
+  cv2.imshow("mask", rectangle_image) # mask needs to be in grayscale?
+  cv2.waitKey(0)
+
+  cv2.imshow("image", image)
+  cv2.waitKey(0)
+
+  dst = cv2.inpaint(image,rectangle_image,3,cv2.INPAINT_TELEA)
+  cv2.imshow('dst', dst)
+  cv2.waitKey(0)
+
+  # image.show()
 print('Done.')
