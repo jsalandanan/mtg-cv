@@ -1,0 +1,3 @@
+- establish a bounded Y range (and potentially bounded X?) to search for contours for copyright
+- find the min/max X and Y for this range to create the bounding rectangle atop the entire segment
+- apply inpainting on this region
