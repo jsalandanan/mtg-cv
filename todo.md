@@ -1,1 +1,5 @@
-- integrate data ingest
+- generalize the end to end execution
+- improve Scryfall API interaction to get cube card images
+- do a better job storing image URIs of previously found cards
+- refine image processing to work on all colors and kinds of standard cards
+- organize metadata properly (e.g. configuration for card specific image processing params)
