@@ -26,67 +26,51 @@ def white_like(color, threshold = 100):
   return True
 
 
-def find_bounds(image):
-  width, height = image.size # 672, 936
+search_area_bounding = {
+  'SEARCH_AREA_MIN_X': 31,
+  'SEARCH_AREA_MAX_X': 480,
+  'SEARCH_AREA_MIN_Y': 885,
+  'SEARCH_AREA_MAX_Y': 906
+}
 
-  minX = width + 1
-  maxX = -1
-  minY = height + 1
-  maxY = -1
+def find_bounds(contours, bounds_dict=search_area_bounding):
+  minX = bounds_dict['SEARCH_AREA_MAX_X']
+  maxX = bounds_dict['SEARCH_AREA_MIN_X']
+  minY = bounds_dict['SEARCH_AREA_MAX_Y']
+  maxY = bounds_dict['SEARCH_AREA_MIN_Y']
 
-  for x in range(33, 336):
-    for y in range(880, 900):
-      if black_like(image.getpixel((x, y))):
-        if x < minX:
-          minX = x
-        if x > maxX:
-          maxX = x
-        if y < minY:
-          minY = y
-        if y > maxY:
-          maxY = y
-        # image.putpixel((x,y), (0, 255, 0))
+  SEARCH_AREA_MAX_X = bounds_dict['SEARCH_AREA_MAX_X']
+  SEARCH_AREA_MIN_X = bounds_dict['SEARCH_AREA_MIN_X']
+  SEARCH_AREA_MAX_Y = bounds_dict['SEARCH_AREA_MAX_Y']
+  SEARCH_AREA_MIN_Y = bounds_dict['SEARCH_AREA_MIN_Y']
 
-  return [(minX, minY), (maxX, maxY)]
+  for contour in contours:
+    x,y,w,h = cv2.boundingRect(contour)
+    inbounds = x > SEARCH_AREA_MIN_X and x + w < SEARCH_AREA_MAX_X and y > SEARCH_AREA_MIN_Y and y + h < SEARCH_AREA_MAX_Y
+    if x < minX and inbounds:
+      minX = x
+    if x + w > maxX and inbounds:
+      maxX = x + w
+    if y < minY and inbounds:
+      minY = y
+    if y + h > maxY and inbounds:
+      maxY = y + h
 
-# calculate the non-white non-black average of colors in region of interest?
-avgR = 0
-avgG = 0
-avgB = 0
-totalPixels = 0
-
-for x in range(33, 336):
-  for y in range(880, 900):
-    if not black_like(image.getpixel((x, y))) and not white_like(image.getpixel((x,y))):
-      r, g, b = image.getpixel((x, y))
-      avgR += r
-      avgG += g
-      avgB += b
-      totalPixels += 1
-
-avgR = int(avgR / totalPixels)
-avgG = int(avgG / totalPixels)
-avgB = int(avgB / totalPixels)
-
-
-
-
-# lmaooo inpainting question mark?
-
-bounds = find_bounds(image)
-minX, minY = bounds[0]
-maxX, maxY = bounds[1]
-
-draw = ImageDraw.Draw(image)
-draw.rectangle(find_bounds(image), fill = (avgR, avgG, avgB))
+  return (minX, maxX, minY, maxY)
 
 test_text_detection = True
 test_inpainting = False
 
 THRESHOLD = 75 # is there a better way to get this other than trial and error?
 
+minX, maxX, minY, maxY = 31, 480, 885, 906
+
 if test_text_detection:
   image = cv2.imread('card-images/Ash Zealot.jpg')
+
+  # cropped = image[minY:maxY, minX:maxX]
+  # cv2.imshow("test", cropped)
+  # cv2.waitKey(0)
 
   grayscale = cv2.cvtColor(src = image, code = cv2.COLOR_BGR2GRAY)
   blur = cv2.GaussianBlur(grayscale, (3, 3), 0)
@@ -104,9 +88,14 @@ if test_text_detection:
   #   color = (255, 0, 0),
   #   thickness = 1)
 
-  for contour in contours:
-    (x,y,w,h) = cv2.boundingRect(contour)
-    cv2.rectangle(image, (x,y), (x+w, y+h), (255, 0, 0), 2)
+  # find the min and max x and y of contours within the established min and max x and y
+  # for contour in contours:
+  #   (x,y,w,h) = cv2.boundingRect(contour)
+  #   cv2.rectangle(image, (x,y), (x+w, y+h), (255,0, 0), 2)
+
+  (minX, maxX, minY, maxY) = find_bounds(contours)
+  print((minX, maxX, minY, maxY))
+  cv2.rectangle(image, (minX,minY), (maxX, maxY), (255, 0, 0), 2)
 
   cv2.imshow("test", image)
   cv2.waitKey(0)
