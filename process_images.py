@@ -38,8 +38,9 @@ def process_image(card_name):
   card_name (str): The name of a card
   """
   THRESHOLD = 75 # is there a better way to get this other than trial and error?
+  extension = '.jpg'
   
-  image = cv2.imread('img/' + card_name)
+  image = cv2.imread('img/' + card_name + extension)
 
   grayscale = cv2.cvtColor(src = image, code = cv2.COLOR_BGR2GRAY)
   blur = cv2.GaussianBlur(grayscale, (3, 3), 0)
@@ -56,7 +57,8 @@ def process_image(card_name):
 
   final = cv2.inpaint(image,mask,3,cv2.INPAINT_TELEA)
 
-  cv2.imwrite('output/' + card_name, final)
+  cv2.imwrite('output/' + card_name + extension, final)
+  print('written')
 
 
 def test():

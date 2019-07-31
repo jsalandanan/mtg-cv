@@ -15,13 +15,8 @@ def format_card_name(card_name):
 
 def download_images(card_list):
   """
-  card_list (str): The filename of a newline separated .txt file of card names.
+  card_list (arr): An array of card name strings.
   """
-  with open(card_list) as f:
-    content = f.readlines()
-
-  card_list = [line.rstrip('\n') for line in content]
-
   i = 1
   num_cards = len(card_list)
   for card_name in card_list:
@@ -44,8 +39,16 @@ def download_images(card_list):
         image_uri = card_faces[1]['image_uris']['large']
         urllib.request.urlretrieve(image_uri, 'img/' + format_card_name(card_name) + " Back.jpg")
 
-download_images(cards_file)
+def main(cards_file):
+  with open(cards_file) as f:
+    content = f.readlines()
 
-card_name = 'Lightning Mauler.jpg'
+  card_list = [line.rstrip('\n') for line in content]
 
-process_image(card_name)
+  download_images(card_list)
+
+  for card_name in card_list:
+    print(card_name)
+    process_image(card_name)
+
+main(cards_file)
