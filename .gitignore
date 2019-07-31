@@ -1,2 +1,5 @@
 card-images/
 output/
+img/
+__pycache__/
+test_cube.txt

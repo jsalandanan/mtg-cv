@@ -33,30 +33,31 @@ def find_bounds(contours, bounds_dict=search_area_bounding):
 
   return (minX, maxX, minY, maxY)
 
-THRESHOLD = 75 # is there a better way to get this other than trial and error?
+def process_image(card_name):
+  """
+  card_name (str): The name of a card
+  """
+  THRESHOLD = 75 # is there a better way to get this other than trial and error?
+  
+  image = cv2.imread('img/' + card_name)
+
+  grayscale = cv2.cvtColor(src = image, code = cv2.COLOR_BGR2GRAY)
+  blur = cv2.GaussianBlur(grayscale, (3, 3), 0)
+
+  retval, binary = cv2.threshold(src = blur, thresh = THRESHOLD, maxval = 255, type = cv2.THRESH_BINARY)
+
+  contours, _ = cv2.findContours(image = binary, mode = cv2.RETR_LIST, method = cv2.CHAIN_APPROX_SIMPLE)
+
+  (minX, maxX, minY, maxY) = find_bounds(contours)
+
+  height, width, _ = image.shape
+  mask = np.zeros((height, width), np.uint8)
+  cv2.rectangle(mask, (minX, minY), (maxX, maxY), 255, thickness=-1)
+
+  final = cv2.inpaint(image,mask,3,cv2.INPAINT_TELEA)
+
+  cv2.imwrite('output/' + card_name, final)
 
 
-card_name = 'Ash Zealot'
-extension = '.jpg'
-filename = card_name + extension
-
-image = cv2.imread('card-images/' + filename)
-
-grayscale = cv2.cvtColor(src = image, code = cv2.COLOR_BGR2GRAY)
-blur = cv2.GaussianBlur(grayscale, (3, 3), 0)
-
-retval, binary = cv2.threshold(src = blur, thresh = THRESHOLD, maxval = 255, type = cv2.THRESH_BINARY)
-
-contours, _ = cv2.findContours(image = binary, mode = cv2.RETR_LIST, method = cv2.CHAIN_APPROX_SIMPLE)
-
-(minX, maxX, minY, maxY) = find_bounds(contours)
-
-height, width, _ = image.shape
-mask = np.zeros((height, width), np.uint8)
-cv2.rectangle(mask, (minX, minY), (maxX, maxY), 255, thickness=-1)
-
-final = cv2.inpaint(image,mask,3,cv2.INPAINT_TELEA)
-
-cv2.imwrite('output/' + filename, final)
-
-print('Done.')
+def test():
+  print('haha')
