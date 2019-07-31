@@ -1,30 +1,5 @@
-from PIL import Image, ImageDraw, ImageColor
 import cv2
 import np
-
-image = Image.open('card-images/Ash Zealot.jpg') # ash zealot
-r, g, b = image.getpixel((30, 878))
-print('{},{},{}'.format(r,g,b)) # black is used (255, 255, 255)ef
-
-def black_like(color, threshold = 100):
-  """
-  Args:
-    color (tup): An rgb integer tuple
-  
-  Returns:
-    bool: Whether or not the color is "black-like"
-  """
-  for coordinate in color:
-    if coordinate > threshold:
-      return False
-  return True
-
-def white_like(color, threshold = 100):
-  for coordinate in color:
-    if coordinate < threshold:
-      return False
-  return True
-
 
 search_area_bounding = {
   'SEARCH_AREA_MIN_X': 31,
@@ -58,66 +33,32 @@ def find_bounds(contours, bounds_dict=search_area_bounding):
 
   return (minX, maxX, minY, maxY)
 
-test_text_detection = True
-test_inpainting = False
-
 THRESHOLD = 75 # is there a better way to get this other than trial and error?
 
-minX, maxX, minY, maxY = 31, 480, 885, 906
 
-if test_text_detection:
-  image = cv2.imread('card-images/Ash Zealot.jpg')
+image = cv2.imread('card-images/Ash Zealot.jpg')
 
-  # cropped = image[minY:maxY, minX:maxX]
-  # cv2.imshow("test", cropped)
-  # cv2.waitKey(0)
+grayscale = cv2.cvtColor(src = image, code = cv2.COLOR_BGR2GRAY)
+blur = cv2.GaussianBlur(grayscale, (3, 3), 0)
 
-  grayscale = cv2.cvtColor(src = image, code = cv2.COLOR_BGR2GRAY)
-  blur = cv2.GaussianBlur(grayscale, (3, 3), 0)
+retval, binary = cv2.threshold(src = blur, thresh = THRESHOLD, maxval = 255, type = cv2.THRESH_BINARY)
 
-  retval, binary = cv2.threshold(src = blur, thresh = THRESHOLD, maxval = 255, type = cv2.THRESH_BINARY)
+cv2.imshow("test", binary)
+cv2.waitKey(0)
 
-  cv2.imshow("test", binary)
-  cv2.waitKey(0)
+contours, _ = cv2.findContours(image = binary, mode = cv2.RETR_LIST, method = cv2.CHAIN_APPROX_SIMPLE)
 
-  contours, _ = cv2.findContours(image = binary, mode = cv2.RETR_LIST, method = cv2.CHAIN_APPROX_SIMPLE)
+(minX, maxX, minY, maxY) = find_bounds(contours)
 
-  # cv2.drawContours(image = image,
-  #   contours = contours,
-  #   contourIdx = -1,
-  #   color = (255, 0, 0),
-  #   thickness = 1)
+height, width, _ = image.shape
+rectangle_image = np.zeros((height, width), np.uint8)
+cv2.rectangle(rectangle_image, (minX, minY), (maxX, maxY), 255, thickness=-1)
 
-  # find the min and max x and y of contours within the established min and max x and y
-  # for contour in contours:
-  #   (x,y,w,h) = cv2.boundingRect(contour)
-  #   cv2.rectangle(image, (x,y), (x+w, y+h), (255,0, 0), 2)
+cv2.imshow("mask", rectangle_image) # mask needs to be in grayscale?
+cv2.waitKey(0)
 
-  (minX, maxX, minY, maxY) = find_bounds(contours)
-  print((minX, maxX, minY, maxY))
-  cv2.rectangle(image, (minX,minY), (maxX, maxY), (255, 0, 0), 2)
+final = cv2.inpaint(image,rectangle_image,3,cv2.INPAINT_TELEA)
+cv2.imshow('final', final)
+cv2.waitKey(0)
 
-  cv2.imshow("test", image)
-  cv2.waitKey(0)
-
-elif test_inpainting:
-  image = cv2.imread('card-images/Ash Zealot.jpg')
-  height, width, _ = image.shape
-
-  rectangle_image = np.zeros((height, width), np.uint8)
-  cv2.rectangle(rectangle_image, (minX, minY), (maxX, maxY), 255, thickness=-1)
-
-  # masked_data = cv2.bitwise_and(image, image, mask=rectangle_image)
-
-  cv2.imshow("mask", rectangle_image) # mask needs to be in grayscale?
-  cv2.waitKey(0)
-
-  cv2.imshow("image", image)
-  cv2.waitKey(0)
-
-  dst = cv2.inpaint(image,rectangle_image,3,cv2.INPAINT_TELEA)
-  cv2.imshow('dst', dst)
-  cv2.waitKey(0)
-
-  # image.show()
 print('Done.')
