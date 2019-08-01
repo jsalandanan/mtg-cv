@@ -1,6 +1,13 @@
 import cv2
 import numpy as np
 from tinydb import TinyDB, Query
+import yaml
+
+with open('settings.yaml') as stream:
+  try:
+    print(yaml.safe_load(stream))
+  except yaml.YAMLError as exc:
+    print(exc)
 
 search_area_bounding = {
   'SEARCH_AREA_MIN_X': 31,

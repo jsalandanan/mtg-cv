@@ -1,0 +1,11 @@
+'2003':
+  threshold_dict:
+    'R': 75
+    'U': 115
+  bounding_dict:
+    'SEARCH_AREA_MIN_X': 31
+    'SEARCH_AREA_MAX_X': 480
+    'SEARCH_AREA_MIN_Y': 885
+    'SEARCH_AREA_MAX_Y': 906
+'2015':
+  'placeholder': 'replace'
