@@ -5,6 +5,7 @@ import urllib.request
 import re
 import os
 from process_images import process_image
+from tinydb import TinyDB, Query
 
 cards_file = sys.argv[1]
 
@@ -17,6 +18,9 @@ def download_images(card_list):
   """
   card_list (arr): An array of card name strings.
   """
+  db = TinyDB('db.json')
+  q = Query()
+
   i = 1
   num_cards = len(card_list)
   for card_name in card_list:
@@ -38,6 +42,10 @@ def download_images(card_list):
         urllib.request.urlretrieve(image_uri, 'img/' + format_card_name(card_name) + " Front.jpg")
         image_uri = card_faces[1]['image_uris']['large']
         urllib.request.urlretrieve(image_uri, 'img/' + format_card_name(card_name) + " Back.jpg")
+
+      # store card info (frame, color) (creature/non-creature, story spotlight, border color?)
+      if not db.search(q.card_name == card_name):
+        db.insert({'card_name': card_name, 'colors': content['colors'], 'frame': content['frame']})
 
 def main(cards_file):
   with open(cards_file) as f:

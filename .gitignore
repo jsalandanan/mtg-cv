@@ -3,3 +3,4 @@ output/
 img/
 __pycache__/
 test_cube.txt
+db.json

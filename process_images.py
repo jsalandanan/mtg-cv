@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from tinydb import TinyDB, Query
 
 search_area_bounding = {
   'SEARCH_AREA_MIN_X': 31,
@@ -29,11 +30,34 @@ def find_bounds(contours, bounds_dict=search_area_bounding):
 
   return valid_bounding_rectangles
 
-def process_image(card_name):
+def parse_color(colors):
+  """
+  colors (arr): An array of the card's color(s).
+  """
+  if len(colors) == 1:
+    return colors[0]
+  else:
+    raise NotImplementedError("To-do: Handle multicolor")
+
+THRESHOLD_DICT = {
+  'U': 115,
+  'R': 75
+}
+
+def process_image(card_name, threshold_dict=THRESHOLD_DICT):
   """
   card_name (str): The name of a card
   """
-  THRESHOLD = 75 # is there a better way to get this other than trial and error?
+  db = TinyDB('db.json')
+  q = Query()
+
+  card_metadata = db.search(q.card_name == card_name)
+  if len(card_metadata) > 1:
+    raise ValueError('Card names should be unique!')
+  card_metadata = card_metadata[0]
+  card_color = parse_color(card_metadata['colors'])
+  threshold = threshold_dict[card_color]
+
   extension = '.jpg'
   
   image = cv2.imread('img/' + card_name + extension)
@@ -41,7 +65,7 @@ def process_image(card_name):
   grayscale = cv2.cvtColor(src = image, code = cv2.COLOR_BGR2GRAY)
   blur = cv2.GaussianBlur(grayscale, (3, 3), 0)
 
-  retval, binary = cv2.threshold(src = blur, thresh = THRESHOLD, maxval = 255, type = cv2.THRESH_BINARY)
+  retval, binary = cv2.threshold(src = blur, thresh = threshold, maxval = 255, type = cv2.THRESH_BINARY)
 
   contours, _ = cv2.findContours(image = binary, mode = cv2.RETR_LIST, method = cv2.CHAIN_APPROX_SIMPLE)
 
