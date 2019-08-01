@@ -1,5 +1,5 @@
 import cv2
-import np
+import numpy as np
 
 search_area_bounding = {
   'SEARCH_AREA_MIN_X': 31,
@@ -19,19 +19,15 @@ def find_bounds(contours, bounds_dict=search_area_bounding):
   SEARCH_AREA_MAX_Y = bounds_dict['SEARCH_AREA_MAX_Y']
   SEARCH_AREA_MIN_Y = bounds_dict['SEARCH_AREA_MIN_Y']
 
+  valid_bounding_rectangles = []
+
   for contour in contours:
     x,y,w,h = cv2.boundingRect(contour)
     inbounds = x > SEARCH_AREA_MIN_X and x + w < SEARCH_AREA_MAX_X and y > SEARCH_AREA_MIN_Y and y + h < SEARCH_AREA_MAX_Y
-    if x < minX and inbounds:
-      minX = x
-    if x + w > maxX and inbounds:
-      maxX = x + w
-    if y < minY and inbounds:
-      minY = y
-    if y + h > maxY and inbounds:
-      maxY = y + h
+    if inbounds:
+      valid_bounding_rectangles.append((x,y,w,h))
 
-  return (minX, maxX, minY, maxY)
+  return valid_bounding_rectangles
 
 def process_image(card_name):
   """
@@ -49,11 +45,16 @@ def process_image(card_name):
 
   contours, _ = cv2.findContours(image = binary, mode = cv2.RETR_LIST, method = cv2.CHAIN_APPROX_SIMPLE)
 
-  (minX, maxX, minY, maxY) = find_bounds(contours)
+  bounding_rects = find_bounds(contours)
 
   height, width, _ = image.shape
   mask = np.zeros((height, width), np.uint8)
-  cv2.rectangle(mask, (minX, minY), (maxX, maxY), 255, thickness=-1)
+  for rect in bounding_rects:
+    x,y,w,h = rect
+    cv2.rectangle(mask, (x, y), (x+w, y+h), 255, thickness=-1)
+
+  cv2.imshow("mask", mask)
+  cv2.waitKey(0)
 
   final = cv2.inpaint(image,mask,3,cv2.INPAINT_TELEA)
 
