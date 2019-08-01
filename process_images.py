@@ -53,14 +53,7 @@ def process_image(card_name):
     x,y,w,h = rect
     cv2.rectangle(mask, (x, y), (x+w, y+h), 255, thickness=-1)
 
-  cv2.imshow("mask", mask)
-  cv2.waitKey(0)
-
   final = cv2.inpaint(image,mask,3,cv2.INPAINT_TELEA)
 
   cv2.imwrite('output/' + card_name + extension, final)
   print('written')
-
-
-def test():
-  print('haha')
