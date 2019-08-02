@@ -5,27 +5,32 @@ import yaml
 
 with open('settings.yaml') as stream:
   try:
-    print(yaml.safe_load(stream))
+    SETTINGS = yaml.safe_load(stream)
   except yaml.YAMLError as exc:
     print(exc)
 
-search_area_bounding = {
-  'SEARCH_AREA_MIN_X': 31,
-  'SEARCH_AREA_MAX_X': 480,
-  'SEARCH_AREA_MIN_Y': 885,
-  'SEARCH_AREA_MAX_Y': 906
-}
+def card_lookup(card_name):
+  """
+  card_name (str)
+  """
+  db = TinyDB('db.json')
+  q = Query()
 
-def find_bounds(contours, bounds_dict=search_area_bounding):
-  minX = bounds_dict['SEARCH_AREA_MAX_X']
-  maxX = bounds_dict['SEARCH_AREA_MIN_X']
-  minY = bounds_dict['SEARCH_AREA_MAX_Y']
-  maxY = bounds_dict['SEARCH_AREA_MIN_Y']
+  card_metadata = db.search(q.card_name == card_name)
+  if len(card_metadata) > 1:
+    raise ValueError('Card names should be unique!')
+  return card_metadata[0]
 
-  SEARCH_AREA_MAX_X = bounds_dict['SEARCH_AREA_MAX_X']
-  SEARCH_AREA_MIN_X = bounds_dict['SEARCH_AREA_MIN_X']
-  SEARCH_AREA_MAX_Y = bounds_dict['SEARCH_AREA_MAX_Y']
-  SEARCH_AREA_MIN_Y = bounds_dict['SEARCH_AREA_MIN_Y']
+def find_bounds(contours, bounding_dict):
+  minX = bounding_dict['SEARCH_AREA_MAX_X']
+  maxX = bounding_dict['SEARCH_AREA_MIN_X']
+  minY = bounding_dict['SEARCH_AREA_MAX_Y']
+  maxY = bounding_dict['SEARCH_AREA_MIN_Y']
+
+  SEARCH_AREA_MAX_X = bounding_dict['SEARCH_AREA_MAX_X']
+  SEARCH_AREA_MIN_X = bounding_dict['SEARCH_AREA_MIN_X']
+  SEARCH_AREA_MAX_Y = bounding_dict['SEARCH_AREA_MAX_Y']
+  SEARCH_AREA_MIN_Y = bounding_dict['SEARCH_AREA_MIN_Y']
 
   valid_bounding_rectangles = []
 
@@ -37,33 +42,20 @@ def find_bounds(contours, bounds_dict=search_area_bounding):
 
   return valid_bounding_rectangles
 
-def parse_color(colors):
-  """
-  colors (arr): An array of the card's color(s).
-  """
-  if len(colors) == 1:
-    return colors[0]
-  else:
-    raise NotImplementedError("To-do: Handle multicolor")
-
-THRESHOLD_DICT = {
-  'U': 115,
-  'R': 75
-}
-
-def process_image(card_name, threshold_dict=THRESHOLD_DICT):
+def process_image(card_name):
   """
   card_name (str): The name of a card
   """
-  db = TinyDB('db.json')
-  q = Query()
+  card_metadata = card_lookup(card_name)
+  card_name = card_metadata['card_name']
+  color = card_metadata['color']
+  frame = card_metadata['frame']
+  type = card_metadata['type']
 
-  card_metadata = db.search(q.card_name == card_name)
-  if len(card_metadata) > 1:
-    raise ValueError('Card names should be unique!')
-  card_metadata = card_metadata[0]
-  card_color = parse_color(card_metadata['colors'])
-  threshold = threshold_dict[card_color]
+  threshold_dict = SETTINGS[frame]['type'][type]
+  bounding_dict = SETTINGS[frame]['bounding_dict']
+
+  threshold = threshold_dict[color]
 
   extension = '.jpg'
   
@@ -76,7 +68,7 @@ def process_image(card_name, threshold_dict=THRESHOLD_DICT):
 
   contours, _ = cv2.findContours(image = binary, mode = cv2.RETR_LIST, method = cv2.CHAIN_APPROX_SIMPLE)
 
-  bounding_rects = find_bounds(contours)
+  bounding_rects = find_bounds(contours, bounding_dict)
 
   height, width, _ = image.shape
   mask = np.zeros((height, width), np.uint8)

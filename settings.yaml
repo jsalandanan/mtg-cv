@@ -1,26 +1,26 @@
 ---
 '2003':
-  type:
-    creature:
-      'R': 75
-      'U': 115
-    non-creature:
-      'R': 'placeholder'
-      'U': 'placeholder'
-  bounding_dict:
+  'type':
+    'creature':
+      'red': 75
+      'blue': 115
+    'non-creature':
+      'red': 'placeholder'
+      'blue': 'placeholder'
+  'bounding_dict':
     'SEARCH_AREA_MIN_X': 31
     'SEARCH_AREA_MAX_X': 480
     'SEARCH_AREA_MIN_Y': 885
     'SEARCH_AREA_MAX_Y': 906
 '2015':
-  type:
-    creature:
-      'R': 'placeholder'
-      'U': 'placeholder'
-    non-creature:
-      'R': 'placeholder'
-      'U': 'placeholder'
-  bounding_dict:
+  'type':
+    'creature':
+      'red': 'placeholder'
+      'blue': 'placeholder'
+    'non-creature':
+      'red': 'placeholder'
+      'blue': 'placeholder'
+  'bounding_dict':
     'SEARCH_AREA_MIN_X': 'placeholder'
     'SEARCH_AREA_MAX_X': 'placeholder'
     'SEARCH_AREA_MIN_Y': 'placeholder'

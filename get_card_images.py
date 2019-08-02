@@ -14,6 +14,38 @@ def format_card_name(card_name):
   card_name = re.sub(r'([^\s\w]|_)+', '', card_name)
   return card_name
 
+def parse_type_line(type_line):
+  """
+  type_line (str): A string representing the card's type.
+  """
+  type_line = type_line.lower()
+  if 'creature' in type_line:
+    return 'creature'
+  elif 'planeswalker' in type_line:
+    return 'planeswalker'
+  else:
+    return 'other'
+
+
+def parse_color(colors):
+  """
+  colors (arr): An array of the card's color(s).
+  """
+  if len(colors) == 1:
+    color = colors[0]
+    if color == 'W':
+      return 'white'
+    elif color == 'U':
+      return 'blue'
+    elif color == 'B':
+      return 'black'
+    elif color == 'R':
+      return 'red'
+    elif color == 'G':
+      return 'green'
+  else:
+    return 'multicolor'
+
 def download_images(card_list):
   """
   card_list (arr): An array of card name strings.
@@ -45,7 +77,7 @@ def download_images(card_list):
 
       # store card info (frame, color) (creature/non-creature, story spotlight, border color?)
       if not db.search(q.card_name == card_name):
-        db.insert({'card_name': card_name, 'colors': content['colors'], 'frame': content['frame']})
+        db.insert({'card_name': card_name, 'color': parse_color(content['colors']), 'frame': content['frame'], 'type': parse_type_line(content['type_line'])})
 
 def main(cards_file):
   with open(cards_file) as f:
