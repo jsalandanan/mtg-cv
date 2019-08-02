@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 from tinydb import TinyDB, Query
 import yaml
+from PIL import Image, ImageDraw, ImageEnhance, ImageOps
 
 with open('settings.yaml') as stream:
   try:
@@ -44,14 +45,21 @@ def find_bounds(contours, bounding_dict):
   return valid_bounding_rectangles
 
 def process_image(card_name, debug=False):
-  """
-  card_name (str): The name of a card
-  """
   card_metadata = card_lookup(card_name)
   card_name = card_metadata['card_name']
   color = card_metadata['color']
   frame = card_metadata['frame']
   type = card_metadata['type']
+
+  if frame == '2015':
+    process_image_naive(card_name, color, frame, type, debug)
+  else:
+    process_image_naive_cv(card_name, color, frame, type, debug)
+
+def process_image_cv(card_name, color, frame, type, debug=False):
+  """
+  card_name (str): The name of a card
+  """
 
   if type == 'creature':
     bounding_dict = SETTINGS[frame][type]
@@ -100,3 +108,14 @@ def process_image(card_name, debug=False):
 
   cv2.imwrite('output/' + card_name + extension, final)
   print('written')
+
+def process_image_naive(card_name, color, frame, type, debug=False):
+  image = Image.open('img/' + card_name + '.jpg')
+  draw = ImageDraw.Draw(image)
+
+  if type == 'creature' or type == 'planeswalker':
+    draw.rectangle([(375,892), (630, 909)], fill = (23,20,15) )
+  else:
+    draw.rectangle([(375,870), (630, 909)], fill = (23,20,15) )
+
+  image.save('out.png')
