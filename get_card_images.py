@@ -6,8 +6,14 @@ import re
 import os
 from process_images import process_image
 from tinydb import TinyDB, Query
+import argparse
 
-cards_file = sys.argv[1]
+parser = argparse.ArgumentParser()
+
+parser.add_argument("-f", "--cardlist", help="Input file", type=str)
+parser.add_argument("-d", "--debug", help="Test mode", type=bool)
+
+args = parser.parse_args()
 
 def format_card_name(card_name):
   card_name = card_name.replace('-', ' ')
@@ -60,7 +66,6 @@ def download_images(card_list):
     print(card_name)
     i += 1
     if os.path.isfile('img/' + format_card_name(card_name)) == False:
-      print("don't be too annoying")
       url = 'https://api.scryfall.com/cards/named?fuzzy=' + card_name
       response = requests.get(url)
       content = json.loads(response.content)
@@ -79,7 +84,7 @@ def download_images(card_list):
       if not db.search(q.card_name == card_name):
         db.insert({'card_name': card_name, 'color': parse_color(content['colors']), 'frame': content['frame'], 'type': parse_type_line(content['type_line'])})
 
-def main(cards_file):
+def main(cards_file, debug=False):
   with open(cards_file) as f:
     content = f.readlines()
 
@@ -89,6 +94,6 @@ def main(cards_file):
 
   for card_name in card_list:
     print(card_name)
-    process_image(card_name)
+    process_image(card_name, debug)
 
-main(cards_file)
+main(args.cardlist, debug=args.debug)

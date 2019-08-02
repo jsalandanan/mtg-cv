@@ -1,18 +1,65 @@
 ---
 '2003':
-  'type':
-    'creature':
-      'red': 75
-      'blue': 115
-    'non-creature':
-      'red': 'placeholder'
-      'blue': 'placeholder'
-  'bounding_dict':
+  'creature':
     'SEARCH_AREA_MIN_X': 31
     'SEARCH_AREA_MAX_X': 480
     'SEARCH_AREA_MIN_Y': 885
     'SEARCH_AREA_MAX_Y': 906
-'2015':
+  'other':
+    'SEARCH_AREA_MIN_X': 31
+    'SEARCH_AREA_MAX_X': 641
+    'SEARCH_AREA_MIN_Y': 885
+    'SEARCH_AREA_MAX_Y': 906
+  'threshold_dict':
+    'white':
+      'threshold': 150
+      'invert': false
+    'blue':
+      'threshold': 115
+      'invert': false
+    'black':
+      'threshold': 120
+      'invert': true
+    'red':
+      'threshold': 75
+      'invert': false
+    'green':
+      'threshold': 74
+      'invert': false
+    'multicolor':
+      'threshold': 93
+      'invert': false
+'1997':
+  'creature':
+    'SEARCH_AREA_MIN_X': 31
+    'SEARCH_AREA_MAX_X': 540
+    'SEARCH_AREA_MIN_Y': 865
+    'SEARCH_AREA_MAX_Y': 898
+  'other':
+    'SEARCH_AREA_MIN_X': 31
+    'SEARCH_AREA_MAX_X': 641
+    'SEARCH_AREA_MIN_Y': 865
+    'SEARCH_AREA_MAX_Y': 898
+  'threshold_dict':
+    'white':
+      'threshold': 120
+      'invert': false
+    'blue':
+      'threshold': 160
+      'invert': true
+    'black':
+      'threshold': 120
+      'invert': true
+    'red':
+      'threshold': 60
+      'invert': false
+    'green':
+      'threshold': 111
+      'invert': true
+    'multicolor':
+      'threshold': 93
+      'invert': true
+'1993':
   'type':
     'creature':
       'red': 'placeholder'

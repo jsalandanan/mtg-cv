@@ -1,3 +1,4 @@
+import sys
 import cv2
 import numpy as np
 from tinydb import TinyDB, Query
@@ -42,7 +43,7 @@ def find_bounds(contours, bounding_dict):
 
   return valid_bounding_rectangles
 
-def process_image(card_name):
+def process_image(card_name, debug=False):
   """
   card_name (str): The name of a card
   """
@@ -52,19 +53,28 @@ def process_image(card_name):
   frame = card_metadata['frame']
   type = card_metadata['type']
 
-  threshold_dict = SETTINGS[frame]['type'][type]
-  bounding_dict = SETTINGS[frame]['bounding_dict']
+  bounding_dict = SETTINGS[frame][type]
+  threshold_dict = SETTINGS[frame]['threshold_dict']
 
-  threshold = threshold_dict[color]
+  threshold = threshold_dict[color]['threshold']
 
   extension = '.jpg'
   
   image = cv2.imread('img/' + card_name + extension)
+  # image = cv2.imread('img/Ravens Crime.jpg')
 
   grayscale = cv2.cvtColor(src = image, code = cv2.COLOR_BGR2GRAY)
   blur = cv2.GaussianBlur(grayscale, (3, 3), 0)
 
-  retval, binary = cv2.threshold(src = blur, thresh = threshold, maxval = 255, type = cv2.THRESH_BINARY)
+  if threshold_dict[color]['invert']:
+    retval, binary = cv2.threshold(src = blur, thresh = threshold, maxval = 255, type = cv2.THRESH_BINARY_INV)
+  else:
+    retval, binary = cv2.threshold(src = blur, thresh = threshold, maxval = 255, type = cv2.THRESH_BINARY)
+
+  if debug:
+    cv2.imshow('binary', binary)
+    cv2.waitKey(0)
+    sys.exit(0)
 
   contours, _ = cv2.findContours(image = binary, mode = cv2.RETR_LIST, method = cv2.CHAIN_APPROX_SIMPLE)
 
