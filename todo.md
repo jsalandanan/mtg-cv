@@ -1,3 +1,6 @@
+- add border/resize handling
+- handle split
+- handle hybrid
 - generalize the end to end execution
 - improve Scryfall API interaction to get cube card images
 - do a better job storing image URIs of previously found cards

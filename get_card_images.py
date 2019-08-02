@@ -36,7 +36,6 @@ def parse_type_line(type_line):
   else:
     return 'other'
 
-
 def parse_color(colors):
   """
   colors (arr): An array of the card's color(s).
