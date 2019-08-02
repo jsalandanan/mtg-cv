@@ -1,3 +1,4 @@
+- handle punctuation in card name processing
 - handle modern and pw
 - add border/resize handling
 - handle split
