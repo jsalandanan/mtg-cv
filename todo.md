@@ -1,3 +1,4 @@
+- handle modern and pw
 - add border/resize handling
 - handle split
 - handle hybrid
