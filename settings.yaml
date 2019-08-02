@@ -1,11 +1,27 @@
+---
 '2003':
-  threshold_dict:
-    'R': 75
-    'U': 115
+  type:
+    creature:
+      'R': 75
+      'U': 115
+    non-creature:
+      'R': 'placeholder'
+      'U': 'placeholder'
   bounding_dict:
     'SEARCH_AREA_MIN_X': 31
     'SEARCH_AREA_MAX_X': 480
     'SEARCH_AREA_MIN_Y': 885
     'SEARCH_AREA_MAX_Y': 906
 '2015':
-  'placeholder': 'replace'
+  type:
+    creature:
+      'R': 'placeholder'
+      'U': 'placeholder'
+    non-creature:
+      'R': 'placeholder'
+      'U': 'placeholder'
+  bounding_dict:
+    'SEARCH_AREA_MIN_X': 'placeholder'
+    'SEARCH_AREA_MAX_X': 'placeholder'
+    'SEARCH_AREA_MIN_Y': 'placeholder'
+    'SEARCH_AREA_MAX_Y': 'placeholder'
