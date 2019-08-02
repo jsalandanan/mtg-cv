@@ -53,10 +53,20 @@ def process_image(card_name, debug=False):
   frame = card_metadata['frame']
   type = card_metadata['type']
 
-  bounding_dict = SETTINGS[frame][type]
+  if type == 'creature':
+    bounding_dict = SETTINGS[frame][type]
+  else:
+    bounding_dict = SETTINGS[frame]['other']
+
+
   threshold_dict = SETTINGS[frame]['threshold_dict']
 
-  threshold = threshold_dict[color]['threshold']
+  if color == 'colorless':
+    threshold = threshold_dict[color][type]['threshold']
+    invert = threshold_dict[color][type]['invert']
+  else:
+    threshold = threshold_dict[color]['threshold']
+    invert = threshold_dict[color]['invert']
 
   extension = '.jpg'
   
@@ -66,7 +76,7 @@ def process_image(card_name, debug=False):
   grayscale = cv2.cvtColor(src = image, code = cv2.COLOR_BGR2GRAY)
   blur = cv2.GaussianBlur(grayscale, (3, 3), 0)
 
-  if threshold_dict[color]['invert']:
+  if invert:
     retval, binary = cv2.threshold(src = blur, thresh = threshold, maxval = 255, type = cv2.THRESH_BINARY_INV)
   else:
     retval, binary = cv2.threshold(src = blur, thresh = threshold, maxval = 255, type = cv2.THRESH_BINARY)

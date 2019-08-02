@@ -25,7 +25,11 @@ def parse_type_line(type_line):
   type_line (str): A string representing the card's type.
   """
   type_line = type_line.lower()
-  if 'creature' in type_line:
+  if 'land' in type_line:
+    return 'land'
+  elif 'artifact' in type_line:
+    return 'artifact'
+  elif 'creature' in type_line:
     return 'creature'
   elif 'planeswalker' in type_line:
     return 'planeswalker'
@@ -37,7 +41,9 @@ def parse_color(colors):
   """
   colors (arr): An array of the card's color(s).
   """
-  if len(colors) == 1:
+  if len(colors) == 0:
+    return 'colorless'
+  elif len(colors) == 1:
     color = colors[0]
     if color == 'W':
       return 'white'

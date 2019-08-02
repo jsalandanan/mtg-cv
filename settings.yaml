@@ -29,6 +29,13 @@
     'multicolor':
       'threshold': 93
       'invert': false
+    'colorless':
+      'artifact':
+        'threshold': 130
+        'invert': false
+      'land':
+        'threshold': 108
+        'invert': true
 '1997':
   'creature':
     'SEARCH_AREA_MIN_X': 31
@@ -59,16 +66,3 @@
     'multicolor':
       'threshold': 93
       'invert': true
-'1993':
-  'type':
-    'creature':
-      'red': 'placeholder'
-      'blue': 'placeholder'
-    'non-creature':
-      'red': 'placeholder'
-      'blue': 'placeholder'
-  'bounding_dict':
-    'SEARCH_AREA_MIN_X': 'placeholder'
-    'SEARCH_AREA_MAX_X': 'placeholder'
-    'SEARCH_AREA_MIN_Y': 'placeholder'
-    'SEARCH_AREA_MAX_Y': 'placeholder'
