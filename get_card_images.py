@@ -15,11 +15,6 @@ parser.add_argument("-d", "--debug", help="Test mode", type=bool)
 
 args = parser.parse_args()
 
-def format_card_name(card_name):
-  card_name = card_name.replace('-', ' ')
-  card_name = re.sub(r'([^\s\w]|_)+', '', card_name)
-  return card_name
-
 def parse_type_line(type_line):
   """
   type_line (str): A string representing the card's type.
@@ -70,20 +65,20 @@ def download_images(card_list):
     print('{} card of {}'.format(i, num_cards))
     print(card_name)
     i += 1
-    if os.path.isfile('img/' + format_card_name(card_name)) == False:
+    if os.path.isfile('img/' + card_name) == False:
       url = 'https://api.scryfall.com/cards/named?fuzzy=' + card_name
       response = requests.get(url)
       content = json.loads(response.content)
 
       try:
         image_uri = content['image_uris']['large']
-        urllib.request.urlretrieve(image_uri, 'img/' + format_card_name(card_name) + ".jpg")
+        urllib.request.urlretrieve(image_uri, 'img/' + card_name + ".jpg")
       except KeyError as e:
         card_faces = content['card_faces']
         image_uri = card_faces[0]['image_uris']['large']
-        urllib.request.urlretrieve(image_uri, 'img/' + format_card_name(card_name) + " Front.jpg")
+        urllib.request.urlretrieve(image_uri, 'img/' + card_name + " Front.jpg")
         image_uri = card_faces[1]['image_uris']['large']
-        urllib.request.urlretrieve(image_uri, 'img/' + format_card_name(card_name) + " Back.jpg")
+        urllib.request.urlretrieve(image_uri, 'img/' + card_name + " Back.jpg")
 
       # store card info (frame, color) (creature/non-creature, story spotlight, border color?)
       if not db.search(q.card_name == card_name):

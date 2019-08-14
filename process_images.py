@@ -44,6 +44,48 @@ def find_bounds(contours, bounding_dict):
 
   return valid_bounding_rectangles
 
+def prettify_image(image, frame): # rename this
+  """
+  image (Image)
+  frame(str): A string representing the frame year from Scryfall. (e.g. '2015')
+  """
+  # Adjust brightness
+  image = ImageEnhance.Brightness(image).enhance(1.07)
+  bcolor = 'black'
+
+  # Remove old border
+  if frame == '2015' or frame == '2003':
+    image = image.crop((29,27,646,910))
+    image = image.resize((690,984), Image.ANTIALIAS)
+    image = ImageOps.expand(image,border=72,fill=bcolor)
+    if frame == '2015':
+      # Round off the top corners
+      draw = ImageDraw.Draw(image)
+      draw.line((66, 66, 74, 66), fill=bcolor)
+      draw.line((66, 67, 72, 67), fill=bcolor)
+      draw.line((66, 68, 69, 68), fill=bcolor)
+      draw.line((66, 69, 68, 69), fill=bcolor)
+      draw.line((66, 70, 68, 70), fill=bcolor)
+      draw.line((66, 71, 67, 71), fill=bcolor)
+      draw.line((66, 72, 67, 72), fill=bcolor)
+      draw.line((66, 73, 66, 73), fill=bcolor)
+
+      draw.line((747, 66, 755, 66), fill=bcolor)
+      draw.line((749, 67, 756, 67), fill=bcolor)
+      draw.line((752, 68, 757, 68), fill=bcolor)
+      draw.line((753, 69, 758, 69), fill=bcolor)
+      draw.line((753, 70, 759, 70), fill=bcolor)
+      draw.line((754, 71, 760, 71), fill=bcolor)
+      draw.line((754, 72, 761, 72), fill=bcolor)
+      draw.line((755, 73, 762, 73), fill=bcolor)
+  else:
+    image = image.crop((33,36,638,898))
+    image = image.resize((678,972), Image.ANTIALIAS)
+    image = ImageOps.expand(image,border=66,fill=bcolor)
+
+  return image
+
+
 def process_image(card_name, debug=False):
   card_metadata = card_lookup(card_name)
   card_name = card_metadata['card_name']
@@ -54,7 +96,14 @@ def process_image(card_name, debug=False):
   if frame == '2015':
     process_image_naive(card_name, color, frame, type, debug)
   else:
-    process_image_naive_cv(card_name, color, frame, type, debug)
+    process_image_cv(card_name, color, frame, type, debug)
+
+  image = Image.open('output/' + card_name + '.jpg')
+
+  image = prettify_image(image, frame)
+
+  image.save('final_output/' + card_name + '.png')
+  print('written')
 
 def process_image_cv(card_name, color, frame, type, debug=False):
   """
@@ -107,7 +156,7 @@ def process_image_cv(card_name, color, frame, type, debug=False):
   final = cv2.inpaint(image,mask,3,cv2.INPAINT_TELEA)
 
   cv2.imwrite('output/' + card_name + extension, final)
-  print('written')
+
 
 def process_image_naive(card_name, color, frame, type, debug=False):
   image = Image.open('img/' + card_name + '.jpg')
@@ -118,4 +167,4 @@ def process_image_naive(card_name, color, frame, type, debug=False):
   else:
     draw.rectangle([(375,870), (630, 909)], fill = (23,20,15) )
 
-  image.save('out.png')
+  image.save('output/' + card_name + '.jpg')
