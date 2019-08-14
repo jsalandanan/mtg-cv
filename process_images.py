@@ -94,7 +94,7 @@ def process_image(card_name, debug=False):
   type = card_metadata['type']
 
   if frame == '2015':
-    process_image_naive(card_name, color, frame, type, debug)
+    process_image_naive(card_name, type, debug)
   else:
     process_image_cv(card_name, color, frame, type, debug)
 
@@ -158,7 +158,7 @@ def process_image_cv(card_name, color, frame, type, debug=False):
   cv2.imwrite('output/' + card_name + extension, final)
 
 
-def process_image_naive(card_name, color, frame, type, debug=False):
+def process_image_naive(card_name, type, debug=False):
   image = Image.open('img/' + card_name + '.jpg')
   draw = ImageDraw.Draw(image)
 
