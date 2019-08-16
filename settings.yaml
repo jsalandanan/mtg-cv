@@ -12,7 +12,7 @@
     'SEARCH_AREA_MAX_Y': 906
   'threshold_dict':
     'white':
-      'threshold': 150
+      'threshold': 170
       'invert': false
     'blue':
       'threshold': 115
