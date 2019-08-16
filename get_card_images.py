@@ -1,5 +1,6 @@
 import sys
 import requests
+import time
 import json
 import urllib.request
 import re
@@ -67,6 +68,8 @@ def download_images(card_list):
     i += 1
     if os.path.isfile('img/' + card_name) == False:
       url = 'https://api.scryfall.com/cards/named?fuzzy=' + card_name
+      time.sleep(0.1)
+
       response = requests.get(url)
       content = json.loads(response.content)
 
