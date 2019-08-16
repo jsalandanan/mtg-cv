@@ -73,6 +73,8 @@ def download_images(card_list):
       response = requests.get(url)
       content = json.loads(response.content)
 
+      get_tokens(content)
+
       try:
         image_uri = content['image_uris']['large']
         urllib.request.urlretrieve(image_uri, 'img/' + card_name + ".jpg")
@@ -86,6 +88,17 @@ def download_images(card_list):
       # store card info (frame, color) (creature/non-creature, story spotlight, border color?)
       if not db.search(q.card_name == card_name):
         db.insert({'card_name': card_name, 'color': parse_color(content['colors']), 'frame': content['frame'], 'type': parse_type_line(content['type_line'])})
+
+def get_tokens(content):
+  related_objects = content["all_parts"]
+  i = 0
+  for obj in related_objects:
+    if obj["object"] == "related_card" and obj["component"]  == "token":
+      response = requests.get(obj["uri"])
+      content = json.loads(response.content)
+      image_uri = content['image_uris']['large']
+      urllib.request.urlretrieve(image_uri, 'img/tokens/' + obj["name"] + "{}.jpg".format(i))
+      i += 1
 
 def main(cards_file, debug=False):
   with open(cards_file) as f:
