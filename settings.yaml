@@ -31,7 +31,7 @@
       'invert': false
     'colorless':
       'artifact':
-        'threshold': 130
+        'threshold': 110
         'invert': false
       'land':
         'threshold': 108
