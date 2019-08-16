@@ -95,6 +95,8 @@ def process_image(card_name, debug=False):
 
   if frame == '2015':
     process_image_naive(card_name, type, debug)
+  elif type == 'planeswalker':
+    process_image_naive_pw(card_name, debug)
   else:
     process_image_cv(card_name, color, frame, type, debug)
 
@@ -166,5 +168,13 @@ def process_image_naive(card_name, type, debug=False):
     draw.rectangle([(375,892), (630, 909)], fill = (23,20,15) )
   else:
     draw.rectangle([(375,870), (630, 909)], fill = (23,20,15) )
+
+  image.save('output/' + card_name + '.jpg')
+
+def process_image_naive_pw(card_name, debug=False):
+  image = Image.open('img/' + card_name + '.jpg')
+  draw = ImageDraw.Draw(image)
+
+  draw.rectangle([(170,885), (510, 903)], fill = (23,20,15) )
 
   image.save('output/' + card_name + '.jpg')
